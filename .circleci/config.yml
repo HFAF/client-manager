@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  deploy:
+    docker:
+      - image: circleci/node:10.7
+    steps:
+      - checkout
+      - run:
+          name: npm install
+          command: npm ci
+      - run:
+          name: test
+          command: npm test
+      - run:
+          name: generate
+          command: npm run generate
+      - run:
+          name: deploy to Firebase Hosting
+          command: ./node_modules/.bin/firebase deploy --only hosting:hfaf-client-manager --token=$FIREBASE_TOKEN
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master
